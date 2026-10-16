@@ -1,0 +1,13 @@
+{
+  "name": "aprende",
+  "version": "1.0.0",
+  "description": "Neuro-Linguistic Spanish Learning Platform leveraging Paivio's Dual-Coding, Hermann's Retrieval Cloze, and Syntactic Priming",
+  "scripts": {
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run dev",
+    "install:all": "npm --prefix backend install && npm --prefix frontend install"
+  },
+  "keywords": ["spanish", "cefr", "spaced-repetition", "dual-coding", "syntax", "language-learning"],
+  "author": "Aprende",
+  "license": "MIT"
+}

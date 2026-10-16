@@ -1,0 +1,78 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    environment:
+      - VITE_API_URL=${VITE_API_URL:-http://localhost:5001/api}
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - aprende-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "5001:5001"
+    environment:
+      - PORT=${PORT:-5001}
+      - NODE_ENV=${NODE_ENV:-production}
+      - DATABASE_URL=mysql://${MYSQL_USER:-aprende_user}:${MYSQL_PASSWORD:-aprende_dev_pass}@mysql:3306/${MYSQL_DATABASE:-aprende_db}
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379}
+      - CORS_ORIGIN=${CORS_ORIGIN:-*}
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    restart: unless-stopped
+    networks:
+      - aprende-network
+
+  mysql:
+    image: mysql:8.0
+    container_name: aprende-mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_dev_pass}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-aprende_db}
+      MYSQL_USER: ${MYSQL_USER:-aprende_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-aprende_dev_pass}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "${MYSQL_USER:-aprende_user}", "-p${MYSQL_PASSWORD:-aprende_dev_pass}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - aprende-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: aprende-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - aprende-network
+
+volumes:
+  mysql-data:
+  redis-data:
+
+networks:
+  aprende-network:
+    driver: bridge

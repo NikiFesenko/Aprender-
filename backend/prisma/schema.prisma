@@ -1,0 +1,110 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum CefrLevel {
+  A1
+  A2
+  B1
+  B2
+  C1
+}
+
+enum ExerciseType {
+  VISUAL_DUAL_CODING
+  SPACED_CLOZE
+  SYNTACTIC_CONSTRUCTOR
+}
+
+model User {
+  id              String            @id @default(cuid())
+  email           String            @unique
+  name            String
+  currentLevel    CefrLevel         @default(A1)
+  totalXp         Int               @default(0)
+  streakDays      Int               @default(1)
+  lastActiveAt    DateTime          @default(now())
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  progress        LevelProgress[]
+  clozeReviews    ClozeReviewItem[]
+  submissions     Submission[]
+
+  @@map("users")
+}
+
+model LevelProgress {
+  id              String       @id @default(cuid())
+  userId          String
+  level           CefrLevel
+  visualXp        Int          @default(0)
+  clozeXp         Int          @default(0)
+  syntaxXp        Int          @default(0)
+  completedCount  Int          @default(0)
+  accuracyRate    Float        @default(100.0)
+  updatedAt       DateTime     @updatedAt
+
+  user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, level])
+  @@map("level_progress")
+}
+
+model Exercise {
+  id              String          @id @default(cuid())
+  level           CefrLevel
+  type            ExerciseType
+  title           String
+  prompt          String
+  targetPhrase    String
+  metadataJson    String          @db.Text
+  explanation     String          @db.Text
+  syntaxNotes     String?         @db.Text
+  createdAt       DateTime        @default(now())
+
+  clozeReviews    ClozeReviewItem[]
+  submissions     Submission[]
+
+  @@index([level, type])
+  @@map("exercises")
+}
+
+model ClozeReviewItem {
+  id                String       @id @default(cuid())
+  userId            String
+  exerciseId        String
+  intervalMinutes   Int          @default(10)
+  repetitionNumber  Int          @default(0)
+  easeFactor        Float        @default(2.5)
+  dueDate           DateTime     @default(now())
+  lastReviewDate    DateTime?
+
+  user              User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exercise          Exercise     @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, exerciseId])
+  @@map("cloze_review_items")
+}
+
+model Submission {
+  id              String       @id @default(cuid())
+  userId          String
+  exerciseId      String
+  isCorrect       Boolean
+  timeSpentMs     Int
+  userResponse    String
+  earnedXp        Int
+  createdAt       DateTime     @default(now())
+
+  user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exercise        Exercise     @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@map("submissions")
+}
