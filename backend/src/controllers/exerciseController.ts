@@ -5,11 +5,12 @@ import { CefrLevel, ExerciseType } from '../types';
 export class ExerciseController {
   async getExercises(req: Request, res: Response) {
     try {
-      const { level, type } = req.query;
+      const { level, type, stage } = req.query;
 
       const exercises = await exerciseService.getExercises({
         level: level ? (String(level).toUpperCase() as CefrLevel) : undefined,
         type: type ? (String(type).toUpperCase() as ExerciseType) : undefined,
+        stageNumber: stage ? parseInt(String(stage), 10) : undefined,
       });
 
       return res.json({

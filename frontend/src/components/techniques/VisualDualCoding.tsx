@@ -114,19 +114,35 @@ export const VisualDualCoding: React.FC<VisualDualCodingProps> = ({
 
       {/* Main Dual-Coding Interactive Card */}
       <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden transition-colors">
-        {/* Visual Scene Container */}
-        <div className="p-4 sm:p-6 bg-slate-50 dark:bg-slate-950/60 border-b border-slate-200 dark:border-slate-800">
-          <div className="relative rounded-2xl overflow-hidden aspect-[16/9] max-h-[300px] shadow-lg border border-slate-200/60 dark:border-slate-800/80">
-            <SvgIllustrations type={metadata.svgType} />
-            <div className="absolute bottom-3 left-3 right-3 px-3.5 py-2 rounded-xl bg-slate-900/80 backdrop-blur-md text-xs text-slate-200 border border-slate-700/50 flex items-center justify-between">
-              <span className="font-medium flex items-center gap-2">
-                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                {metadata.svgTitle}
-              </span>
-              <span className="text-amber-300 font-mono hidden md:inline">{metadata.visualCueNote}</span>
+        {/* Visual Scene Container (Conditional based on hasIllustration) */}
+        {metadata.hasIllustration !== false && metadata.svgType && metadata.svgType !== 'none' ? (
+          <div className="p-4 sm:p-6 bg-slate-50 dark:bg-slate-950/60 border-b border-slate-200 dark:border-slate-800">
+            <div className="relative rounded-2xl overflow-hidden aspect-[16/9] max-h-[300px] shadow-lg border border-slate-200/60 dark:border-slate-800/80">
+              <SvgIllustrations type={metadata.svgType as any} />
+              <div className="absolute bottom-3 left-3 right-3 px-3.5 py-2 rounded-xl bg-slate-900/80 backdrop-blur-md text-xs text-slate-200 border border-slate-700/50 flex items-center justify-between">
+                <span className="font-medium flex items-center gap-2">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                  {metadata.svgTitle || 'Contexto Visual'}
+                </span>
+                {metadata.visualCueNote && (
+                  <span className="text-amber-300 font-mono hidden md:inline">{metadata.visualCueNote}</span>
+                )}
+              </div>
             </div>
           </div>
-        </div>
+        ) : (
+          <div className="px-6 py-4 bg-gradient-to-r from-rose-500/10 via-amber-500/5 to-transparent border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
+              <span className="text-xs font-bold font-mono uppercase tracking-wider text-rose-600 dark:text-rose-400">
+                Enfoque Estructural Directo (Morfosintaxis Pura)
+              </span>
+            </div>
+            <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+              Asociación Textual sin Imagen
+            </span>
+          </div>
+        )}
 
         {/* Textual & Grammatical Association Area */}
         <div className="p-6 sm:p-8 space-y-6">
@@ -262,13 +278,13 @@ export const VisualDualCoding: React.FC<VisualDualCodingProps> = ({
                   <div className="p-4 rounded-xl bg-white/80 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800 text-sm space-y-2">
                     <div className="flex items-center gap-2 text-rose-600 dark:text-rose-400 font-semibold text-xs uppercase tracking-wide">
                       <BookOpen className="w-4 h-4" />
-                      {metadata.morphoSyntaxBreakdown.rule}
+                      {metadata.morphoSyntaxBreakdown?.rule || metadata.grammaticalRule || 'Regla Morfosintáctica'}
                     </div>
                     <div className="font-mono text-xs bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-lg text-slate-800 dark:text-slate-200">
-                      Patrón: {metadata.morphoSyntaxBreakdown.pattern}
+                      Patrón: {metadata.morphoSyntaxBreakdown?.pattern || metadata.syntaxPattern || 'Estructura sintáctica'}
                     </div>
                     <p className="text-slate-600 dark:text-slate-300 text-xs leading-relaxed">
-                      {metadata.morphoSyntaxBreakdown.explanation}
+                      {metadata.morphoSyntaxBreakdown?.explanation || metadata.explanation || exercise.explanation || 'Observa la concordancia en género, número y tiempo verbal en la oración.'}
                     </p>
                   </div>
 

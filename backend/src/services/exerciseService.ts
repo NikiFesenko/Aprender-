@@ -8,8 +8,8 @@ export class ExerciseService {
     private cache: ICacheService = cacheService
   ) {}
 
-  async getExercises(filters?: { level?: CefrLevel; type?: ExerciseType }): Promise<Exercise[]> {
-    const cacheKey = `exercises:${filters?.level || 'ALL'}:${filters?.type || 'ALL'}`;
+  async getExercises(filters?: { level?: CefrLevel; type?: ExerciseType; stageNumber?: number }): Promise<Exercise[]> {
+    const cacheKey = `exercises:${filters?.level || 'ALL'}:${filters?.type || 'ALL'}:${filters?.stageNumber || 'ALL'}`;
     const cached = await this.cache.get<Exercise[]>(cacheKey);
     if (cached) {
       return cached;

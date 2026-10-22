@@ -4,11 +4,12 @@ import { LOCAL_EXERCISES } from '../data/localExercises';
 const API_BASE = import.meta.env.VITE_API_URL || '/api';
 
 export const apiClient = {
-  async getExercises(level?: CefrLevel, type?: ExerciseType): Promise<Exercise[]> {
+  async getExercises(level?: CefrLevel, type?: ExerciseType, stageNumber?: number): Promise<Exercise[]> {
     try {
       const params = new URLSearchParams();
       if (level) params.append('level', level);
       if (type) params.append('type', type);
+      if (stageNumber) params.append('stage', String(stageNumber));
 
       const res = await fetch(`${API_BASE}/exercises?${params.toString()}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -26,6 +27,12 @@ export const apiClient = {
     }
     if (type) {
       filtered = filtered.filter((e) => e.type.toUpperCase() === type.toUpperCase());
+    }
+    if (stageNumber) {
+      const stageFiltered = filtered.filter((e) => e.stageNumber === stageNumber);
+      if (stageFiltered.length > 0) {
+        filtered = stageFiltered;
+      }
     }
     return filtered;
   },

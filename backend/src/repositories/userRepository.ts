@@ -25,6 +25,7 @@ export class InMemoryUserRepository implements IUserRepository {
     userId: 'usr_demo_aprende',
     name: 'Estudiante',
     currentLevel: 'A1',
+    currentStageNumber: 1,
     totalXp: 180,
     streakDays: 4,
     nextLevelXpTarget: 250,
@@ -40,6 +41,7 @@ export class InMemoryUserRepository implements IUserRepository {
         masteryPercentage: 72,
         exercisesCompleted: 4,
         accuracyRate: 95,
+        completedStages: [1],
       },
       A2: {
         level: 'A2',
@@ -51,6 +53,7 @@ export class InMemoryUserRepository implements IUserRepository {
         masteryPercentage: 0,
         exercisesCompleted: 0,
         accuracyRate: 100,
+        completedStages: [],
       },
       B1: {
         level: 'B1',
@@ -62,6 +65,7 @@ export class InMemoryUserRepository implements IUserRepository {
         masteryPercentage: 0,
         exercisesCompleted: 0,
         accuracyRate: 100,
+        completedStages: [],
       },
       B2: {
         level: 'B2',
@@ -73,6 +77,7 @@ export class InMemoryUserRepository implements IUserRepository {
         masteryPercentage: 0,
         exercisesCompleted: 0,
         accuracyRate: 100,
+        completedStages: [],
       },
       C1: {
         level: 'C1',
@@ -84,6 +89,7 @@ export class InMemoryUserRepository implements IUserRepository {
         masteryPercentage: 0,
         exercisesCompleted: 0,
         accuracyRate: 100,
+        completedStages: [],
       },
     },
   };
